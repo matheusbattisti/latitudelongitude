@@ -9,7 +9,8 @@ $( document ).ready(function() {
 		var address = cep;
 		geocoder.geocode( { 'address': address}, function(results, status) {
 
-			console.log(status);
+		  console.log(status);
+		  console.log(address);
 
 		  if (status == google.maps.GeocoderStatus.OK) {
 
@@ -31,14 +32,22 @@ $( document ).ready(function() {
 		  }  else if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {    
             
             setTimeout(function() {
-                convertCep(address);
-            }, 1000);
+            	convertCep(address)}
+            , 1000);
+
+          } else if(status === google.maps.GeocoderStatus.ZERO_RESULTS) {
+
+          	lng = '0';
+		    lat = '0';
           
           //algum erro diferente do limite de query
           } else {
           
             console.log("Geocode was not successful for the following reason:" 
                   + status);
+
+            lng = '0';
+		    lat = '0';
           
           }
 
@@ -62,11 +71,20 @@ $( document ).ready(function() {
 		}
 
 		if(res != '') {
-			jQuery(res).each(function(i) {
 
-				convertCep(res[i]);
+			var i = 0;
 
-			});
+			function cepLoop() { 
+			   setTimeout(function () {
+			      convertCep(res[i]);
+			      i++; 
+			      if (i < res.length) { 
+			         cepLoop();
+			      } 
+			   }, 1050)
+			}
+
+			cepLoop();
 
 		} else {	
 			convertCep(cep);
